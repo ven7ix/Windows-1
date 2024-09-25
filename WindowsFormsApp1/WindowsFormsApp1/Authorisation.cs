@@ -7,23 +7,58 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Security.Cryptography;
+using System.IO;
 
 namespace WindowsFormsApp1
 {
     public partial class Authorisation : Form
     {
-        public Authorisation()
+        private string passwordForAdmin = "admin1111";
+
+        private NewRecord formOwner;
+        public Authorisation(NewRecord owner)
         {
+            formOwner = owner;
             InitializeComponent();
         }
 
-        private void comboBoxLogin_SelectedIndexChanged(object sender, EventArgs e)
+        private void ComboBoxLogin_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (comboBoxLogin.SelectedItem.ToString() == "admin")
-            {
-                textBoxPassword.Enabled = true;
-            } 
+            if (comboBoxLogin.SelectedItem.ToString() == "admin") textBoxPassword.Enabled = true;
             else textBoxPassword.Enabled = false;
+        }
+
+        private string GetHash(string input)
+        {
+            MD5 md5 = MD5.Create();
+            byte[] hash = md5.ComputeHash(Encoding.UTF8.GetBytes(input));
+
+            return Convert.ToBase64String(hash);
+        }
+
+        private void ButtonOkAuth_Click(object sender, EventArgs e)
+        {
+            string loginPasswordRight = GetHash(passwordForAdmin);
+            string loginPassword = GetHash(comboBoxLogin.Text + textBoxPassword.Text);
+
+            if (loginPassword == loginPasswordRight)
+            {
+                formOwner.personCardNumber.Enabled = true;
+                formOwner.personBirthday.Enabled = true;
+
+                formOwner.BackColor = Color.Aqua;
+                formOwner.personCardNumber.BackColor = Color.Peru;
+                formOwner.personName.BackColor = Color.Peru;
+                formOwner.personBirthday.CalendarForeColor = Color.PaleGoldenrod;
+
+                Close();
+            }
+        }
+
+        private void ButtonCancelAuth_Click(object sender, EventArgs e)
+        {
+            Close();
         }
     }
 }

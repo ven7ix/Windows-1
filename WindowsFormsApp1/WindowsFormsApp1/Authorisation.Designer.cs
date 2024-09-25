@@ -65,16 +65,16 @@
             this.comboBoxLogin.Size = new System.Drawing.Size(166, 21);
             this.comboBoxLogin.TabIndex = 2;
             this.comboBoxLogin.Text = "user";
-            this.comboBoxLogin.SelectedIndexChanged += new System.EventHandler(this.comboBoxLogin_SelectedIndexChanged);
+            this.comboBoxLogin.SelectedIndexChanged += new System.EventHandler(this.ComboBoxLogin_SelectedIndexChanged);
             // 
             // textBoxPassword
             // 
             this.textBoxPassword.Enabled = false;
             this.textBoxPassword.Location = new System.Drawing.Point(439, 94);
             this.textBoxPassword.Name = "textBoxPassword";
+            this.textBoxPassword.PasswordChar = '*';
             this.textBoxPassword.Size = new System.Drawing.Size(167, 20);
             this.textBoxPassword.TabIndex = 4;
-            this.textBoxPassword.Text = "*";
             // 
             // buttonOkAuth
             // 
@@ -84,6 +84,7 @@
             this.buttonOkAuth.TabIndex = 5;
             this.buttonOkAuth.Text = "ok";
             this.buttonOkAuth.UseVisualStyleBackColor = true;
+            this.buttonOkAuth.Click += new System.EventHandler(this.ButtonOkAuth_Click);
             // 
             // buttonCancelAuth
             // 
@@ -93,6 +94,7 @@
             this.buttonCancelAuth.TabIndex = 6;
             this.buttonCancelAuth.Text = "cancel";
             this.buttonCancelAuth.UseVisualStyleBackColor = true;
+            this.buttonCancelAuth.Click += new System.EventHandler(this.ButtonCancelAuth_Click);
             // 
             // Authorisation
             // 

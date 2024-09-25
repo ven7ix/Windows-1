@@ -42,7 +42,7 @@
             this.buttonDeleteRecord.TabIndex = 0;
             this.buttonDeleteRecord.Text = "delete";
             this.buttonDeleteRecord.UseVisualStyleBackColor = true;
-            this.buttonDeleteRecord.Click += new System.EventHandler(this.buttonDeleteRecord_Click);
+            this.buttonDeleteRecord.Click += new System.EventHandler(this.ButtonDeleteRecord_Click);
             // 
             // buttonEditRecord
             // 
@@ -52,7 +52,7 @@
             this.buttonEditRecord.TabIndex = 8;
             this.buttonEditRecord.Text = "edit";
             this.buttonEditRecord.UseVisualStyleBackColor = true;
-            this.buttonEditRecord.Click += new System.EventHandler(this.buttonEditRecord_Click);
+            this.buttonEditRecord.Click += new System.EventHandler(this.ButtonEditRecord_Click);
             // 
             // buttonNewRecord
             // 
@@ -62,7 +62,7 @@
             this.buttonNewRecord.TabIndex = 9;
             this.buttonNewRecord.Text = "create";
             this.buttonNewRecord.UseVisualStyleBackColor = true;
-            this.buttonNewRecord.Click += new System.EventHandler(this.buttonNewRecord_Click);
+            this.buttonNewRecord.Click += new System.EventHandler(this.ButtonNewRecord_Click);
             // 
             // peopleList
             // 
@@ -82,7 +82,7 @@
             this.Controls.Add(this.buttonEditRecord);
             this.Controls.Add(this.buttonDeleteRecord);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "People list";
             this.ResumeLayout(false);
 
         }
@@ -91,7 +91,6 @@
 
         private System.Windows.Forms.Button buttonDeleteRecord;
         private System.Windows.Forms.Button buttonEditRecord;
-        private System.Windows.Forms.Button createRecord;
         private System.Windows.Forms.Button buttonNewRecord;
         public System.Windows.Forms.ListBox peopleList;
     }

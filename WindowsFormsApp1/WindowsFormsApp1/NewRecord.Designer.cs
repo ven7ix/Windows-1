@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.personCardNumber = new System.Windows.Forms.TextBox();
             this.personName = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -36,14 +37,18 @@
             this.buttonAccept = new System.Windows.Forms.Button();
             this.personBirthday = new System.Windows.Forms.DateTimePicker();
             this.buttonDeny = new System.Windows.Forms.Button();
+            this.buttonAcceptMove = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
             // personCardNumber
             // 
             this.personCardNumber.Location = new System.Drawing.Point(80, 73);
+            this.personCardNumber.MaxLength = 5;
             this.personCardNumber.Name = "personCardNumber";
             this.personCardNumber.Size = new System.Drawing.Size(289, 20);
             this.personCardNumber.TabIndex = 0;
+            this.personCardNumber.TextChanged += new System.EventHandler(this.PersonCardNumber_TextChanged);
+            this.personCardNumber.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.PersonCardNumber_KeyPress);
             // 
             // personName
             // 
@@ -81,13 +86,14 @@
             // 
             // buttonAccept
             // 
-            this.buttonAccept.Location = new System.Drawing.Point(429, 325);
+            this.buttonAccept.Location = new System.Drawing.Point(429, 323);
             this.buttonAccept.Name = "buttonAccept";
+            this.buttonAccept.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.buttonAccept.Size = new System.Drawing.Size(110, 64);
             this.buttonAccept.TabIndex = 7;
             this.buttonAccept.Text = "ok";
             this.buttonAccept.UseVisualStyleBackColor = true;
-            this.buttonAccept.Click += new System.EventHandler(this.buttonAccept_Click);
+            this.buttonAccept.Click += new System.EventHandler(this.ButtonAccept_Click);
             // 
             // personBirthday
             // 
@@ -98,13 +104,19 @@
             // 
             // buttonDeny
             // 
+            this.buttonDeny.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.buttonDeny.Location = new System.Drawing.Point(582, 323);
             this.buttonDeny.Name = "buttonDeny";
             this.buttonDeny.Size = new System.Drawing.Size(113, 65);
             this.buttonDeny.TabIndex = 9;
             this.buttonDeny.Text = "nope";
             this.buttonDeny.UseVisualStyleBackColor = true;
-            this.buttonDeny.Click += new System.EventHandler(this.buttonDeny_Click);
+            this.buttonDeny.Click += new System.EventHandler(this.ButtonDeny_Click);
+            // 
+            // buttonAcceptMove
+            // 
+            this.buttonAcceptMove.Interval = 10;
+            this.buttonAcceptMove.Tick += new System.EventHandler(this.ButtonAcceptMove_Tick);
             // 
             // NewRecord
             // 
@@ -119,9 +131,10 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.personName);
             this.Controls.Add(this.personCardNumber);
+            this.Cursor = System.Windows.Forms.Cursors.Default;
             this.KeyPreview = true;
             this.Name = "NewRecord";
-            this.Text = "newRecord";
+            this.Text = "New record";
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.NewRecord_KeyDown_1);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -136,6 +149,7 @@
         private System.Windows.Forms.Button buttonDeny;
         public System.Windows.Forms.TextBox personName;
         public System.Windows.Forms.DateTimePicker personBirthday;
+        private System.Windows.Forms.Timer buttonAcceptMove;
         public System.Windows.Forms.TextBox personCardNumber;
     }
 }

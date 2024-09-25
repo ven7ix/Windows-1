@@ -8,9 +8,9 @@ namespace WindowsFormsApp1
 {
     public interface IPerson
     {
-        int CardNumber { get; }
-        string Name { get; }
-        DateTime Birthday { get; }
+        int _CardNumber { get; }
+        string _Name { get; }
+        DateTime _Birthday { get; }
         int CalcAge(DateTime date);
     }
 }

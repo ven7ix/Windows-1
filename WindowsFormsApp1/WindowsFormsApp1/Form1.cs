@@ -12,42 +12,75 @@ namespace WindowsFormsApp1
 {
     public partial class Form1 : Form
     {
+        List<Person> peopleArray = new List<Person>();
+
         public Form1()
         {
             InitializeComponent();
         }
 
-        private void buttonNewRecord_Click(object sender, EventArgs e)
+        private void NewRecord_OnDataSubmitted(int cardNumber, string name, DateTime birthday)
         {
-            NewRecord record = new NewRecord();
-            record.Owner = this;
-            record.ShowDialog();
-        }
+            Person person = new Person(cardNumber, name, birthday);
 
-        private void buttonEditRecord_Click(object sender, EventArgs e)
-        {
-            NewRecord record = new NewRecord();
-            record.Owner = this;
+            peopleArray.Add(person); //массив всех людей
 
-            if (peopleList.SelectedItem != null)
+            peopleList.Items.Clear();
+            foreach (Person p in peopleArray)
             {
-                string person = peopleList.SelectedItem.ToString();
-                string[] personData = person.Split('\t');
-
-                record.personCardNumber.Text = personData[0];
-                record.personName.Text = personData[1];
-                record.personBirthday.Text = personData[2];
-
-                record.personCardNumber.Enabled = false;
-                record.personBirthday.Enabled = false;
-                
-                record.ShowDialog();
-
-                peopleList.Items.RemoveAt(peopleList.SelectedIndex);
+                //список в форме
+                peopleList.Items.Add(p._Name + "\t" + p.CalcAge(DateTime.Now).ToString());
             }
         }
 
-        private void buttonDeleteRecord_Click(object sender, EventArgs e)
+        private void ButtonNewRecord_Click(object sender, EventArgs e)
+        {
+            NewRecord record = new NewRecord();
+
+            record.CallerButton = false;
+            record.OnDataSubmitted += NewRecord_OnDataSubmitted;
+
+            record.ShowDialog();
+        }
+
+        private void EditRecord_OnDataSubmitted(int cardNumber, string name, DateTime birthday)
+        {
+            peopleArray[peopleList.SelectedIndex]._CardNumber = cardNumber;
+            peopleArray[peopleList.SelectedIndex]._Name = name;
+            peopleArray[peopleList.SelectedIndex]._Birthday = birthday;
+
+            peopleList.Items.Clear();
+            foreach (Person p in peopleArray)
+            {
+                //список в форме
+                peopleList.Items.Add(p._Name + "\t" + p.CalcAge(DateTime.Now).ToString());
+            }
+        }
+
+        private void ButtonEditRecord_Click(object sender, EventArgs e)
+        {
+            if (peopleList.SelectedItem != null)
+            {
+                NewRecord record = new NewRecord();
+
+                int index = peopleList.SelectedIndex;
+                record.personCardNumber.Text = peopleArray[index]._CardNumber.ToString();
+                record.personName.Text = peopleArray[index]._Name;
+                record.personBirthday.Value = peopleArray[index]._Birthday;
+
+                record.personCardNumber.Enabled = false;
+                record.personBirthday.Enabled = false;
+
+                record.CallerButton = true;
+                record.OnDataSubmitted += EditRecord_OnDataSubmitted;
+
+                record.ShowDialog();
+
+                
+            }
+        }
+
+        private void ButtonDeleteRecord_Click(object sender, EventArgs e)
         {
             if (peopleList.SelectedItem != null)
             {
@@ -55,14 +88,11 @@ namespace WindowsFormsApp1
                 if (dialogResult == DialogResult.Yes)
                 {
                     string person = peopleList.SelectedItem.ToString();
-                    peopleList.Items.RemoveAt(peopleList.SelectedIndex);
+                    int index = peopleList.SelectedIndex;
+                    peopleList.Items.RemoveAt(index);
+                    peopleArray.RemoveAt(index);
                 }
-            } 
-            else
-            {
-                MessageBox.Show("you haven't selected record");
             }
         }
-
     }
 }
