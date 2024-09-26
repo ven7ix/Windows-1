@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             this.personCardNumber = new System.Windows.Forms.TextBox();
             this.personName = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -37,7 +36,6 @@
             this.buttonAccept = new System.Windows.Forms.Button();
             this.personBirthday = new System.Windows.Forms.DateTimePicker();
             this.buttonDeny = new System.Windows.Forms.Button();
-            this.buttonAcceptMove = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
             // personCardNumber
@@ -48,7 +46,6 @@
             this.personCardNumber.Size = new System.Drawing.Size(289, 20);
             this.personCardNumber.TabIndex = 0;
             this.personCardNumber.TextChanged += new System.EventHandler(this.PersonCardNumber_TextChanged);
-            this.personCardNumber.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.PersonCardNumber_KeyPress);
             // 
             // personName
             // 
@@ -113,11 +110,6 @@
             this.buttonDeny.UseVisualStyleBackColor = true;
             this.buttonDeny.Click += new System.EventHandler(this.ButtonDeny_Click);
             // 
-            // buttonAcceptMove
-            // 
-            this.buttonAcceptMove.Interval = 10;
-            this.buttonAcceptMove.Tick += new System.EventHandler(this.ButtonAcceptMove_Tick);
-            // 
             // NewRecord
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -136,6 +128,7 @@
             this.Name = "NewRecord";
             this.Text = "New record";
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.NewRecord_KeyDown_1);
+            this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.NewRecord_MouseMove);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -149,7 +142,6 @@
         private System.Windows.Forms.Button buttonDeny;
         public System.Windows.Forms.TextBox personName;
         public System.Windows.Forms.DateTimePicker personBirthday;
-        private System.Windows.Forms.Timer buttonAcceptMove;
         public System.Windows.Forms.TextBox personCardNumber;
     }
 }

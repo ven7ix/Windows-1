@@ -12,7 +12,7 @@ namespace WindowsFormsApp1
 {
     public partial class Form1 : Form
     {
-        List<Person> peopleArray = new List<Person>();
+        public List<Person> peopleArray = new List<Person>();
 
         public Form1()
         {
@@ -35,11 +35,11 @@ namespace WindowsFormsApp1
 
         private void ButtonNewRecord_Click(object sender, EventArgs e)
         {
-            NewRecord record = new NewRecord();
+            NewRecord record = new NewRecord(false, peopleArray, -1);
 
-            record.CallerButton = false;
+
             record.OnDataSubmitted += NewRecord_OnDataSubmitted;
-
+            
             record.ShowDialog();
         }
 
@@ -61,7 +61,7 @@ namespace WindowsFormsApp1
         {
             if (peopleList.SelectedItem != null)
             {
-                NewRecord record = new NewRecord();
+                NewRecord record = new NewRecord(true, peopleArray, peopleList.SelectedIndex);
 
                 int index = peopleList.SelectedIndex;
                 record.personCardNumber.Text = peopleArray[index]._CardNumber.ToString();
@@ -71,12 +71,9 @@ namespace WindowsFormsApp1
                 record.personCardNumber.Enabled = false;
                 record.personBirthday.Enabled = false;
 
-                record.CallerButton = true;
                 record.OnDataSubmitted += EditRecord_OnDataSubmitted;
 
                 record.ShowDialog();
-
-                
             }
         }
 

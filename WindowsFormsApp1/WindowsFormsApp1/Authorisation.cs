@@ -14,7 +14,7 @@ namespace WindowsFormsApp1
 {
     public partial class Authorisation : Form
     {
-        private string passwordForAdmin = "admin1111";
+        private string passwordForAdminHash = "KVzmcRYG6upaLo8MRwPntw=="; //password 1111 (string admin1111)
 
         private NewRecord formOwner;
         public Authorisation(NewRecord owner)
@@ -22,6 +22,8 @@ namespace WindowsFormsApp1
             formOwner = owner;
             InitializeComponent();
         }
+
+
 
         private void ComboBoxLogin_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -39,10 +41,9 @@ namespace WindowsFormsApp1
 
         private void ButtonOkAuth_Click(object sender, EventArgs e)
         {
-            string loginPasswordRight = GetHash(passwordForAdmin);
             string loginPassword = GetHash(comboBoxLogin.Text + textBoxPassword.Text);
 
-            if (loginPassword == loginPasswordRight)
+            if (loginPassword == passwordForAdminHash)
             {
                 formOwner.personCardNumber.Enabled = true;
                 formOwner.personBirthday.Enabled = true;
@@ -59,6 +60,11 @@ namespace WindowsFormsApp1
         private void ButtonCancelAuth_Click(object sender, EventArgs e)
         {
             Close();
+        }
+
+        private void Authorisation_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

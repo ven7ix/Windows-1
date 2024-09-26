@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace WindowsFormsApp1
 {
-    public class Person : IPerson
+    public class Person :  IPerson
     {
         public int _CardNumber { get; set; }
         public string _Name { get; set; }
@@ -23,7 +23,7 @@ namespace WindowsFormsApp1
         public int CalcAge(DateTime date)
         {
             int age = date.Year - _Birthday.Year;
-            if (date.Month < _Birthday.Month || (date.Month < _Birthday.Month && date.Day < _Birthday.Day)) age--;
+            if (date.Month < _Birthday.Month || (date.Month == _Birthday.Month && date.Day < _Birthday.Day)) age--;
             return age;
         }
     }
