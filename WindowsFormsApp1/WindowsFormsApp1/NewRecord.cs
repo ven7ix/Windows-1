@@ -34,13 +34,16 @@ namespace WindowsFormsApp1
 
         private void ButtonAccept_Click(object sender, EventArgs e)
         {
+            if (personCardNumber.Text.Length != 5) MessageBox.Show("Card number must be 5 caracters long");
+            if (personName.Text.Length <= 0) MessageBox.Show("Person's name must be at least 1 caracter long");
+            if (personBirthday.Value > DateTime.Now) MessageBox.Show("Person's birthday cannot be in future");
             if (personCardNumber.Text.Length == 5 && personName.Text.Length > 0 && personBirthday.Value <= DateTime.Now)
             {
                 int cardNumber = int.Parse(personCardNumber.Text);
                 string name = personName.Text;
                 DateTime birthday = personBirthday.Value;
 
-                //начало доп задания
+                //начало доп задания (в списке не может быть одинаковых айди)
                 int indexPos = 0;
                 foreach (Person p in _peopleArray)
                 {
@@ -60,12 +63,9 @@ namespace WindowsFormsApp1
                 OnDataSubmitted?.Invoke(cardNumber, name, birthday);
 
                 Close();
-            } 
-            else
-            {
-                MessageBox.Show("wrong id, name or date");
             }
         }
+
         private void ButtonDeny_Click(object sender, EventArgs e)
         {
             Close();
@@ -85,12 +85,14 @@ namespace WindowsFormsApp1
         {
             if (adminMode) textChanged = true;
 
+            //проверка на 0 в начале строки card
             if (personCardNumber.Text.Length > 0 && personCardNumber.Text[0] == '0')
             {
                 personCardNumber.Text = personCardNumber.Text.Replace(personCardNumber.Text[0].ToString(), "");
                 personCardNumber.SelectionStart = personCardNumber.Text.Length;
             }
             
+            //проверка на символ в строке card
             foreach (char c in personCardNumber.Text) {
                 if (!Char.IsDigit(c))
                 {
