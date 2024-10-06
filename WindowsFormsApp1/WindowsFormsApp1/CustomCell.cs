@@ -1,12 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using WindowsFormsApp1;
 
 namespace WindowsFormsApp2
 {
@@ -32,10 +27,10 @@ namespace WindowsFormsApp2
         {
             CustomCell cell = new CustomCell(data, null);
             displayedCells.Add(cell);
-            dataGridView.Rows.Add(cell._data);
+            dataGridView.Rows.Add("+", cell._data);
             cell._isShown = true;
             cell._whatInfoStored = whatInfoStored;
-            MakeCellReadOnly(dataGridView.Rows[dataGridView.Rows.Count - 1], whatInfoStored);
+            MakeCellReadOnly(dataGridView.Rows[dataGridView.Rows.Count - 1].Cells[1], whatInfoStored);
         }
 
         public static void NewDependenceHandler(string data, Enum whatInfoStored, CustomCell cell)
@@ -45,13 +40,13 @@ namespace WindowsFormsApp2
             newCell._whatInfoStored = whatInfoStored;
         }
 
-        //надо как-нибудь исправить эту дичь с перегрузками
-
         //для добавления новой пустой зависимости
-        public static void NewDependence(int selected, Enum whatInfoStored)
+        public static void NewDependence(DataGridView dataGridView, Enum whatInfoStored)
         {
+            int selected = dataGridView.CurrentCell.RowIndex;
             CustomCell cell = displayedCells[selected];
             NewDependenceHandler("-----", whatInfoStored, cell);
+            dataGridView.Rows[selected].Cells[0].Value = "+";
         }
 
         //для добавления зависимости при создании нового человека
@@ -163,14 +158,16 @@ namespace WindowsFormsApp2
 
         //можно вынести в Form1
         //или избавиться от "enum_name" и "enum_other"
-        public static void MakeCellReadOnly(DataGridViewRow row, Enum whatInfoStored)
+        public static void MakeCellReadOnly(DataGridViewCell cell, Enum whatInfoStored)
         {
-            if (whatInfoStored.ToString() == "enum_name" || whatInfoStored.ToString() == "enum_other") row.ReadOnly = false;
-            else row.ReadOnly = true;
+            if (whatInfoStored.ToString() == "enum_name" || whatInfoStored.ToString() == "enum_other") cell.ReadOnly = false;
+            else cell.ReadOnly = true;
         }
 
         public static void OpenCell(int selected, DataGridView dataGridView)
         {
+            //есть dataGridViewPeople.Rows[i].Visible = false; мб когда-нибудь добавлю
+
             CustomCell cell = displayedCells[selected];
             if (cell._dependentCells.Count == 0) return;
 
@@ -182,16 +179,19 @@ namespace WindowsFormsApp2
                     DataGridViewRow newRow = new DataGridViewRow();
                     newRow.CreateCells(dataGridView);
 
-                    //для показа на каком уровне находится ячейка через пробелы; не работает \t
-                    for (int i = 0; i < CountParents(c); i++) newRow.Cells[0].Value += "    ";
+                    if (c._dependentCells.Count > 0) newRow.Cells[0].Value = "+";
 
-                    newRow.Cells[0].Value += c._data;
+                    //для показа на каком уровне находится ячейка через пробелы; не работает \t
+                    for (int i = 0; i < CountParents(c); i++) newRow.Cells[1].Value += "    ";
+
+                    newRow.Cells[1].Value += c._data;
                     dataGridView.Rows.Insert(selected + 1, newRow);
                     displayedCells.Insert(selected + 1, c);
                     c._isShown = true;
 
-                    MakeCellReadOnly(newRow, c._whatInfoStored);
+                    MakeCellReadOnly(newRow.Cells[1], c._whatInfoStored);
                 }
+                dataGridView.Rows[selected].Cells[0].Value = "-";
                 cell._isOpen = true;
             }
             else
@@ -216,6 +216,7 @@ namespace WindowsFormsApp2
                     if (current._dependentCells == null) continue;
                     foreach (CustomCell c in current._dependentCells) queue.Enqueue(c);
                 }
+                dataGridView.Rows[selected].Cells[0].Value = "+";
                 cell._isOpen = false;
             }
         }

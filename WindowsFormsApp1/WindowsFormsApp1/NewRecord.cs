@@ -1,15 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using WindowsFormsApp1;
-
 
 
 namespace WindowsFormsApp1
@@ -24,6 +15,7 @@ namespace WindowsFormsApp1
 
         private readonly List<Person> _peopleArray;
         private readonly int _index;
+
         public NewRecord(bool callerButton, List<Person> peopleArray, int index)
         {
             _peopleArray = peopleArray;

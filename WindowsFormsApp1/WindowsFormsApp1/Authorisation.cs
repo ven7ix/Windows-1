@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Security.Cryptography;
-using System.IO;
 
 namespace WindowsFormsApp1
 {
@@ -22,8 +16,6 @@ namespace WindowsFormsApp1
             formOwner = owner;
             InitializeComponent();
         }
-
-
 
         private void ComboBoxLogin_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -60,11 +52,6 @@ namespace WindowsFormsApp1
         private void ButtonCancelAuth_Click(object sender, EventArgs e)
         {
             Close();
-        }
-
-        private void Authorisation_Load(object sender, EventArgs e)
-        {
-
         }
     }
 }
