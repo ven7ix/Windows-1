@@ -85,9 +85,9 @@
             this.dataGridViewPeople.Name = "dataGridViewPeople";
             this.dataGridViewPeople.Size = new System.Drawing.Size(289, 212);
             this.dataGridViewPeople.TabIndex = 11;
-            this.dataGridViewPeople.CellBeginEdit += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.dataGridViewPeople_CellBeginEdit);
-            this.dataGridViewPeople.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewPeople_CellEndEdit);
-            this.dataGridViewPeople.RowHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridViewPeople_RowHeaderMouseClick);
+            this.dataGridViewPeople.CellBeginEdit += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.DataGridViewPeople_CellBeginEdit);
+            this.dataGridViewPeople.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridViewPeople_CellEndEdit);
+            this.dataGridViewPeople.RowHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.DataGridViewPeople_RowHeaderMouseClick);
             // 
             // ButtonNewDependence
             // 

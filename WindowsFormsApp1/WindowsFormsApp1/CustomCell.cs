@@ -19,8 +19,8 @@ namespace WindowsFormsApp2
         private bool _isShown = false;
         private Enum _whatInfoStored;
 
-        //я не знаю правильно ли это но оно работает
-        private static List<CustomCell> displayedCells = new List<CustomCell>();
+        //я не знаю правильно ли это, но оно работает
+        private static readonly List<CustomCell> displayedCells = new List<CustomCell>();
 
         public CustomCell(string data, CustomCell parent)
         {
@@ -35,6 +35,7 @@ namespace WindowsFormsApp2
             dataGridView.Rows.Add(cell._data);
             cell._isShown = true;
             cell._whatInfoStored = whatInfoStored;
+            MakeCellReadOnly(dataGridView.Rows[dataGridView.Rows.Count - 1], whatInfoStored);
         }
 
         public static void NewDependenceHandler(string data, Enum whatInfoStored, CustomCell cell)
@@ -68,6 +69,69 @@ namespace WindowsFormsApp2
             NewDependenceHandler(data, whatInfoStored, cell);
         }
 
+        public static int IndexOfSelectedInPeopleArray(int selected)
+        {
+            CustomCell cell = displayedCells[selected];
+            while (cell._parent != null)
+            {
+                cell = cell._parent;
+            }
+
+            int indexInPeopleArray = 0;
+            foreach (CustomCell c in displayedCells)
+            {
+                if (c._parent == null)
+                {
+                    if (c == cell) break;
+                    indexInPeopleArray++;
+                }
+            }
+
+            return indexInPeopleArray;
+        }
+
+        public static void EditDependentCellData(int selected, string data, Enum whatInfoStored)
+        {
+            CustomCell cell = displayedCells[selected];
+
+            Queue<CustomCell> queue = new Queue<CustomCell>();
+            queue.Enqueue(cell);
+
+            while (queue.Count > 0)
+            {
+                CustomCell current = queue.Dequeue();
+
+                //body
+                if (current._whatInfoStored.Equals(whatInfoStored))
+                {
+                    current._data = data;
+                    break;
+                }
+                //end
+
+                if (current._dependentCells == null) continue;
+                foreach (CustomCell c in current._dependentCells) queue.Enqueue(c);
+            }
+        }
+
+        public static int IndexOfSelectedRootCell(int selected)
+        {
+            CustomCell cell = displayedCells[selected];
+            while (cell._parent != null)
+            {
+                cell = cell._parent;
+            }
+
+            int indexOfRoot = 0;
+            foreach (CustomCell c in displayedCells)
+            {
+                if (c == cell) break;
+                indexOfRoot++;
+            }
+
+            return indexOfRoot;
+        }
+
         public static void DeleteDependence(int selected, DataGridView dataGridView)
         {
             CustomCell cell = displayedCells[selected];
@@ -97,6 +161,14 @@ namespace WindowsFormsApp2
             cell._parent?._dependentCells.Remove(cell);
         }
 
+        //можно вынести в Form1
+        //или избавиться от "enum_name" и "enum_other"
+        public static void MakeCellReadOnly(DataGridViewRow row, Enum whatInfoStored)
+        {
+            if (whatInfoStored.ToString() == "enum_name" || whatInfoStored.ToString() == "enum_other") row.ReadOnly = false;
+            else row.ReadOnly = true;
+        }
+
         public static void OpenCell(int selected, DataGridView dataGridView)
         {
             CustomCell cell = displayedCells[selected];
@@ -118,9 +190,7 @@ namespace WindowsFormsApp2
                     displayedCells.Insert(selected + 1, c);
                     c._isShown = true;
 
-                    //запрет на редактирование ячеек name, card, birth, age
-                    if (c._whatInfoStored.ToString() == "enum_name" || c._whatInfoStored.ToString() == "enum_other") newRow.ReadOnly = false;
-                    else newRow.ReadOnly = true;
+                    MakeCellReadOnly(newRow, c._whatInfoStored);
                 }
                 cell._isOpen = true;
             }
@@ -139,6 +209,7 @@ namespace WindowsFormsApp2
                         dataGridView.Rows.RemoveAt(selected + 1);
                         displayedCells.RemoveAt(selected + 1);
                         current._isShown = false;
+                        current._isOpen = false;
                     }
                     //end
 
@@ -195,6 +266,16 @@ namespace WindowsFormsApp2
                 cell._parent._dependentCells[cellIndex]._data = dataGridView.CurrentCell.Value.ToString();
             }
             else cell._data = dataGridView.CurrentCell.Value.ToString();
+        }
+
+        public static string CellValue(int selected)
+        {
+            return displayedCells[selected]._data;
+        }
+
+        public static Enum CellWhatInfoStored(int selected)
+        {
+            return displayedCells[selected]._whatInfoStored;
         }
     }
 }

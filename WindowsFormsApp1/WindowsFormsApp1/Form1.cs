@@ -16,6 +16,7 @@ namespace WindowsFormsApp1
     {
         public List<Person> peopleArray = new List<Person>();
 
+        //заменить enum на что-то другое (массив мб)
         public enum WhatGoesToCell
         {
             enum_cardNumber, enum_name, enum_birthday, enum_calcAge, enum_other
@@ -49,16 +50,16 @@ namespace WindowsFormsApp1
 
         private void AddNewPersonInCell(Person person)
         {
-            CustomCell.AddNewCellOnTop(dataGridViewPeople, person._Name, WhatGoesToCell.enum_name);
-            CustomCell.NewDependence(person._CardNumber.ToString(), WhatGoesToCell.enum_cardNumber);
+            CustomCell.AddNewCellOnTop(dataGridViewPeople, person._CardNumber.ToString(), WhatGoesToCell.enum_cardNumber);
+            CustomCell.NewDependence(person._Name, WhatGoesToCell.enum_name);
             CustomCell.NewDependence(person.CalcAge(DateTime.Now).ToString(), WhatGoesToCell.enum_calcAge);
             CustomCell.NewDependence(1, person._Birthday.ToString("dd.MM.yyyy"), WhatGoesToCell.enum_birthday);
         }
 
-        private void dataGridViewPeople_RowHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        private void DataGridViewPeople_RowHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             CustomCell.OpenCell(dataGridViewPeople.CurrentCell.RowIndex, dataGridViewPeople);
-            dataGridViewPeople.Refresh();
+            dataGridViewPeople.Update();
         }
 
         private void ButtonNewRecord_Click(object sender, EventArgs e)
@@ -70,59 +71,55 @@ namespace WindowsFormsApp1
 
         private void EditRecord_OnDataSubmitted(int cardNumber, string name, DateTime birthday)
         {
-            //для CustomCell надо будет пересчитывать индекс
-            peopleArray[peopleList.SelectedIndex]._CardNumber = cardNumber;
-            peopleArray[peopleList.SelectedIndex]._Name = name;
-            peopleArray[peopleList.SelectedIndex]._Birthday = birthday;
+            //пересчитываем индекс для peopleArray
+            int selected = CustomCell.IndexOfSelectedInPeopleArray(dataGridViewPeople.CurrentCell.RowIndex);
+            peopleArray[selected]._CardNumber = cardNumber;
+            peopleArray[selected]._Name = name;
+            peopleArray[selected]._Birthday = birthday;
 
-            peopleList.Items.Clear();
-            foreach (Person p in peopleArray)
-            {
-                //список в форме
-                peopleList.Items.Add(p._Name + "\t" + p.CalcAge(DateTime.Now).ToString());
-            }
+            int cellIndex = CustomCell.IndexOfSelectedRootCell(dataGridViewPeople.CurrentCell.RowIndex);
+            CustomCell.EditDependentCellData(cellIndex, cardNumber.ToString(), WhatGoesToCell.enum_cardNumber);
+            CustomCell.EditDependentCellData(cellIndex, name, WhatGoesToCell.enum_name);
+            CustomCell.EditDependentCellData(cellIndex, birthday.ToString("dd.MM.yyyy"), WhatGoesToCell.enum_birthday);
+            CustomCell.EditDependentCellData(cellIndex, peopleArray[selected].CalcAge(DateTime.Now).ToString(), WhatGoesToCell.enum_calcAge);
+
+            dataGridViewPeople.Update();
         }
 
         private void ButtonEditRecord_Click(object sender, EventArgs e)
         {
-            if (peopleList.SelectedItem != null)
-            {
-                NewRecord record = new NewRecord(true, peopleArray, peopleList.SelectedIndex);
+            if (dataGridViewPeople.CurrentCell == null) return;
 
-                int index = peopleList.SelectedIndex;
-                record.personCardNumber.Text = peopleArray[index]._CardNumber.ToString();
-                record.personName.Text = peopleArray[index]._Name;
-                record.personBirthday.Value = peopleArray[index]._Birthday;
+            int index = CustomCell.IndexOfSelectedInPeopleArray(dataGridViewPeople.CurrentCell.RowIndex);
+            if (index == -1) MessageBox.Show("Somethig Went Wrong");
+            NewRecord record = new NewRecord(true, peopleArray, index);
 
-                record.personCardNumber.Enabled = false;
-                record.personBirthday.Enabled = false;
+            record.personCardNumber.Text = peopleArray[index]._CardNumber.ToString();
+            record.personName.Text = peopleArray[index]._Name;
+            record.personBirthday.Value = peopleArray[index]._Birthday;
 
-                record.OnDataSubmitted += EditRecord_OnDataSubmitted;
+            record.personCardNumber.Enabled = false;
+            record.personBirthday.Enabled = false;
 
-                record.ShowDialog();
-            }
+            record.OnDataSubmitted += EditRecord_OnDataSubmitted;
+
+            record.ShowDialog();
         }
 
         private void ButtonDeleteRecord_Click(object sender, EventArgs e)
         {
-            if (peopleList.SelectedItem != null)
-            {
-                DialogResult dialogResult1 = MessageBox.Show("you shure?", "confirmation", MessageBoxButtons.YesNo);
-                if (dialogResult1 == DialogResult.Yes)
-                {
-                    int index = peopleList.SelectedIndex;
-                    peopleList.Items.RemoveAt(index);
-                    peopleArray.RemoveAt(index);
-                }
-            }
-
             if (dataGridViewPeople.CurrentCell == null) return;
             DialogResult dialogResult = MessageBox.Show("you shure?", "confirmation", MessageBoxButtons.YesNo);
             if (dialogResult == DialogResult.Yes)
             {
                 int selected = dataGridViewPeople.CurrentCell.RowIndex;
+
+                if (CustomCell.IndexOfSelectedRootCell(selected) == selected)
+                {
+                    peopleArray.RemoveAt(CustomCell.IndexOfSelectedInPeopleArray(selected));
+                }
+
                 CustomCell.DeleteDependence(selected, dataGridViewPeople);
-                //peopleArray.RemoveAt(selected); наверное придется передавать в CustomCell
             }
         }
 
@@ -130,18 +127,26 @@ namespace WindowsFormsApp1
         {
             if (dataGridViewPeople.CurrentCell == null) return;
             CustomCell.NewDependence(dataGridViewPeople.CurrentCell.RowIndex, WhatGoesToCell.enum_other);
+            dataGridViewPeople.Update();
         }
 
-        private void dataGridViewPeople_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
+        private void DataGridViewPeople_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
         {
             if (dataGridViewPeople.CurrentCell == null) return;
             CustomCell.EnterEditCell(dataGridViewPeople);
         }
 
-        private void dataGridViewPeople_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        private void DataGridViewPeople_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
             if (dataGridViewPeople.CurrentCell == null) return;
             CustomCell.ExitEditCell(dataGridViewPeople);
+
+            int selected = dataGridViewPeople.CurrentCell.RowIndex;
+
+            if (CustomCell.CellWhatInfoStored(selected).ToString() == WhatGoesToCell.enum_name.ToString())
+            {
+                peopleArray[CustomCell.IndexOfSelectedInPeopleArray(selected)]._Name = CustomCell.CellValue(selected);
+            }
         }
     }
 }
