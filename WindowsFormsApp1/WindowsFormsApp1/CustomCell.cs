@@ -17,36 +17,53 @@ namespace WindowsFormsApp2
         //я не знаю правильно ли это, но оно работает
         private static readonly List<CustomCell> displayedCells = new List<CustomCell>();
 
-        public CustomCell(string data, CustomCell parent)
+        public CustomCell(string data, CustomCell parent, Enum whatInfoStored)
         {
             _data = data;
             _parent = parent;
+            _whatInfoStored = whatInfoStored;
         }
 
         public static void AddNewCellOnTop(DataGridView dataGridView, string data, Enum whatInfoStored)
         {
-            CustomCell cell = new CustomCell(data, null);
+            CustomCell cell = new CustomCell(data, null, whatInfoStored);
             displayedCells.Add(cell);
             dataGridView.Rows.Add("+", cell._data);
             cell._isShown = true;
-            cell._whatInfoStored = whatInfoStored;
             MakeCellReadOnly(dataGridView.Rows[dataGridView.Rows.Count - 1].Cells[1], whatInfoStored);
         }
 
         public static void NewDependenceHandler(string data, Enum whatInfoStored, CustomCell cell)
         {
-            CustomCell newCell = new CustomCell(data, cell);
+            CustomCell newCell = new CustomCell(data, cell, whatInfoStored);
             cell._dependentCells.Add(newCell);
-            newCell._whatInfoStored = whatInfoStored;
         }
 
         //для добавления новой пустой зависимости
         public static void NewDependence(DataGridView dataGridView, Enum whatInfoStored)
         {
             int selected = dataGridView.CurrentCell.RowIndex;
+
             CustomCell cell = displayedCells[selected];
             NewDependenceHandler("-----", whatInfoStored, cell);
-            dataGridView.Rows[selected].Cells[0].Value = "+";
+            CustomCell dependentCell = cell._dependentCells.Last();
+
+            //update table
+            if (cell._isOpen)
+            {
+                DataGridViewRow newRow = new DataGridViewRow();
+                newRow.CreateCells(dataGridView);
+
+
+                for (int i = 0; i < CountParents(dependentCell); i++) newRow.Cells[1].Value += "    ";
+
+                newRow.Cells[1].Value += dependentCell._data;
+
+                dataGridView.Rows.Insert(selected + 1, newRow);
+                displayedCells.Insert(selected + 1, dependentCell);
+                dependentCell._isShown = true;
+            }
+            else dataGridView.Rows[selected].Cells[0].Value = "+";
         }
 
         //для добавления зависимости при создании нового человека
@@ -85,27 +102,41 @@ namespace WindowsFormsApp2
             return indexInPeopleArray;
         }
 
-        public static void EditDependentCellData(int selected, string data, Enum whatInfoStored)
+        public static void EditDependentCellData(DataGridView dataGridView, string data, Enum whatInfoStored)
         {
-            CustomCell cell = displayedCells[selected];
+            int cellIndex = IndexOfSelectedRootCell(dataGridView.CurrentCell.RowIndex);
+            CustomCell cell = displayedCells[cellIndex]; //берем корневую ячейку
 
-            Queue<CustomCell> queue = new Queue<CustomCell>();
-            queue.Enqueue(cell);
-
-            while (queue.Count > 0)
+            if (cell._isOpen)
             {
-                CustomCell current = queue.Dequeue();
-
-                //body
-                if (current._whatInfoStored.Equals(whatInfoStored))
+                Queue<CustomCell> queue = new Queue<CustomCell>();
+                queue.Enqueue(cell);
+                while (queue.Count > 0)
                 {
-                    current._data = data;
-                    break;
-                }
-                //end
+                    CustomCell current = queue.Dequeue();
 
-                if (current._dependentCells == null) continue;
-                foreach (CustomCell c in current._dependentCells) queue.Enqueue(c);
+                    //body
+                    if (current._whatInfoStored.Equals(whatInfoStored) && current._isShown)
+                    {
+                        current._data = data;
+                        dataGridView.Rows[displayedCells.IndexOf(current)].Cells[1].Value = "";
+                        for (int i = 0; i < CountParents(current); i++) dataGridView.Rows[displayedCells.IndexOf(current)].Cells[1].Value += "    ";
+                        dataGridView.Rows[displayedCells.IndexOf(current)].Cells[1].Value += data;
+                        break;
+                    }
+                    //end
+
+                    if (current._dependentCells == null) continue;
+                    foreach (CustomCell c in current._dependentCells) queue.Enqueue(c);
+                }
+            }
+            else
+            {
+                if (cell._whatInfoStored.Equals(whatInfoStored))
+                {
+                    cell._data = data;
+                    dataGridView.Rows[cellIndex].Cells[1].Value = data;
+                }
             }
         }
 
@@ -154,6 +185,18 @@ namespace WindowsFormsApp2
             dataGridView.Rows.RemoveAt(selected);
             displayedCells.RemoveAt(selected);
             cell._parent?._dependentCells.Remove(cell);
+
+            //vanity
+            if (cell._dependentCells.Count == 0 && selected > 1) dataGridView.Rows[selected - 1].Cells[0].Value = "";
+        }
+
+        public static bool CheckIsCellValuable(CustomCell cell)
+        {
+            if (cell._whatInfoStored.ToString() == "enum_name" || cell._whatInfoStored.ToString() == "enum_cardNumber" || cell._whatInfoStored.ToString() == "enum_birthday" || cell._whatInfoStored.ToString() == "enum_calcAge")
+            {
+                return true;
+            }
+            return false;
         }
 
         //можно вынести в Form1

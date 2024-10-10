@@ -71,11 +71,11 @@ namespace WindowsFormsApp1
             peopleArray[selected]._Name = name;
             peopleArray[selected]._Birthday = birthday;
 
-            int cellIndex = CustomCell.IndexOfSelectedRootCell(dataGridViewPeople.CurrentCell.RowIndex);
-            CustomCell.EditDependentCellData(cellIndex, cardNumber.ToString(), WhatGoesToCell.enum_cardNumber);
-            CustomCell.EditDependentCellData(cellIndex, name, WhatGoesToCell.enum_name);
-            CustomCell.EditDependentCellData(cellIndex, birthday.ToString("dd.MM.yyyy"), WhatGoesToCell.enum_birthday);
-            CustomCell.EditDependentCellData(cellIndex, peopleArray[selected].CalcAge(DateTime.Now).ToString(), WhatGoesToCell.enum_calcAge);
+            
+            CustomCell.EditDependentCellData(dataGridViewPeople, cardNumber.ToString(), WhatGoesToCell.enum_cardNumber);
+            CustomCell.EditDependentCellData(dataGridViewPeople, name, WhatGoesToCell.enum_name);
+            CustomCell.EditDependentCellData(dataGridViewPeople, birthday.ToString("dd.MM.yyyy"), WhatGoesToCell.enum_birthday);
+            CustomCell.EditDependentCellData(dataGridViewPeople, peopleArray[selected].CalcAge(DateTime.Now).ToString(), WhatGoesToCell.enum_calcAge);
         }
 
         //update (?)
